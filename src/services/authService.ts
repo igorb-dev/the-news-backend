@@ -21,9 +21,7 @@ export class AuthService {
       });
 
       if (!user) {
-        user = await prisma.user.create({
-          data: { email },
-        });
+        return { status: 400, data: { message: "E-mail inválido" } };
       }
 
       const token = jwt.sign(

@@ -16,19 +16,16 @@ export class AuthService {
     }
 
     try {
-      // Busca usuário no banco
       let user = await prisma.user.findUnique({
         where: { email },
       });
 
-      // Se o usuário não existir, cria um novo
       if (!user) {
         user = await prisma.user.create({
           data: { email },
         });
       }
 
-      // Gera token JWT
       const token = jwt.sign(
         { id: user.id, email: user.email },
         process.env.JWT_SECRET as string,

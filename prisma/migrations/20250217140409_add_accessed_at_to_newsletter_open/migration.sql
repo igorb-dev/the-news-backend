@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "NewsletterOpen" ADD COLUMN     "accessedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

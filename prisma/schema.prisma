@@ -16,19 +16,19 @@ model User {
 }
 
 model Streak {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id])
-  current     Int      @default(0)
-  max         Int      @default(0)
-  lastOpen    DateTime?
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  count      Int      @default(1)
+  lastOpened DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model NewsletterOpen {
-  id           String   @id @default(uuid())
-  userId       String
+  id         String   @id @default(uuid())
+  userId     String
   newsletterId String
-  openDate     DateTime @default(now())
+  openDate   DateTime @default(now())
+  accessedAt   DateTime @default(now())
 
-  user         User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }

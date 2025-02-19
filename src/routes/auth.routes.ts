@@ -16,6 +16,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/server-awake", async (req, res) => {
   try {
+    console.log("Servidor Acordado")
   res.status(200).json({message: "Servidor Acordado"});
 } catch (error) {
   res.status(500).json({ message: "Erro interno no servidor" });

@@ -9,8 +9,8 @@ router.get("/", async (req, res) => {
   try {
     const { email, id, utm_source, utm_medium, utm_campaign, utm_channel } = req.query;
 
-    if (!email || !id) {
-       res.status(400).json({ error: "Email e ID são obrigatórios" });
+    if (!email) {
+       res.status(400).json({ error: "Email é obrigatório" });
        return
     }
 

@@ -9,21 +9,20 @@ router.get("/", async (req, res) => {
   try {
     const { email, id, utm_source, utm_medium, utm_campaign, utm_channel } = req.query;
 
-    if (!email) {
-       res.status(400).json({ error: "Email é obrigatório" });
+    if (!email || !id) {
+       res.status(400).json({ error: "Email e id são obrigatórios" });
        return
     }
 
     console.log(`📩 Webhook recebido para o email: ${email}`);
 
-    // Verifica se o usuário existe
     let user = await prisma.user.findUnique({ where: { email: String(email) } });
 
     if (!user) {
       console.log("🆕 Usuário não encontrado, criando novo...");
       user = await prisma.user.create({
         data: {
-          id: String(id), // Usando o ID fornecido na requisição
+          id: String(id),
           email: String(email),
         },
       })

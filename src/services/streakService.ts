@@ -12,7 +12,7 @@ export class StreakService {
           count: true,
           lastOpened: true,
           user: {
-            select: { email: true },
+            select: { email: true, streakCount: true },
           },
         },
         orderBy: { count: "desc" },
@@ -47,37 +47,41 @@ export class StreakService {
       const today = dayjs().startOf("day");
       const lastOpened = streak ? dayjs(streak.lastOpened).startOf("day") : null;
 
+      let newStreakCount = 1;
+
       if (!streak) {
-        const newStreak = await prisma.streak.create({
+        await prisma.streak.create({
           data: { userId, count: 1, lastOpened: today.toDate() },
         });
-        return { status: 201, data: newStreak };
-      }
-
-      if (lastOpened?.isSame(today)) {
+      } else if (lastOpened?.isSame(today)) {
         console.log("📅 Já contou hoje, nada a fazer.");
         return { status: 200, data: streak };
-      }
-
-      const diffDays = today.diff(lastOpened, "day");
-      const isYesterday = diffDays === 1;
-      const isSundaySkip = lastOpened?.day() === 6 && today.day() === 1; // Sábado → Segunda
-
-      if (isYesterday || isSundaySkip) {
-        const updatedStreak = await prisma.streak.update({
-          where: { userId },
-          data: { count: streak.count + 1, lastOpened: today.toDate() },
-        });
-        console.log(`🔥 Streak atualizado para ${streak.count + 1}!`);
-        return { status: 200, data: updatedStreak };
       } else {
-        const resetStreak = await prisma.streak.update({
-          where: { userId },
-          data: { count: 1, lastOpened: today.toDate() },
-        });
-        console.log("💀 Streak zerado!");
-        return { status: 200, data: resetStreak };
+        const diffDays = today.diff(lastOpened, "day");
+        const isYesterday = diffDays === 1;
+        const isSundaySkip = lastOpened?.day() === 6 && today.day() === 1; // Sábado → Segunda
+
+        if (isYesterday || isSundaySkip) {
+          newStreakCount = streak.count + 1;
+          await prisma.streak.update({
+            where: { userId },
+            data: { count: newStreakCount, lastOpened: today.toDate() },
+          });
+        } else {
+          await prisma.streak.update({
+            where: { userId },
+            data: { count: 1, lastOpened: today.toDate() },
+          });
+        }
       }
+
+      // 🔥 Atualiza o streakCount na tabela User
+      await prisma.user.update({
+        where: { id: userId },
+        data: { streakCount: newStreakCount },
+      });
+
+      return { status: 200, data: { streakCount: newStreakCount } };
     } catch (error) {
       console.error("Erro ao atualizar streak:", error);
       return { status: 500, data: { message: "Erro interno no servidor" } };

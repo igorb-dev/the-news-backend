@@ -36,3 +36,8 @@ model Streak {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model MotivationalMessage {
+  id      String @id @default(uuid())
+  message String
+}

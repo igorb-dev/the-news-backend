@@ -6,8 +6,7 @@ import { MessageService } from "../services/messageService";
 
 const router = Router();
 
-router.get("/:id", authMiddleware, async (req, res) => {
-  const { id } = req.params;
+router.get("/", authMiddleware, async (req, res) => {
 
   try {
     const streaks = await MessageService.getRandomMessage();

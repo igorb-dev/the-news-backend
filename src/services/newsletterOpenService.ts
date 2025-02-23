@@ -17,4 +17,26 @@ export class NewsletterOpenService {
         return { status: 500, data: { message: "Erro interno no servidor" } };
       }
     }
+
+    static async getAllNews() {
+      try {
+        const streaks = await prisma.newsletterOpen.findMany({
+          select: {
+            id: true,
+            userId: true,
+            user: {
+              select: { email: true, streakCount: true },
+            },
+            postId: true,
+            openedAt: true
+          },
+          orderBy: { userId: "desc" },
+        });
+  
+        return { status: 200, data: streaks };
+      } catch (error) {
+        console.error("Erro ao buscar todos os streaks:", error);
+        return { status: 500, data: { message: "Erro interno no servidor" } };
+      }
+    }
   }
